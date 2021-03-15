@@ -2,12 +2,26 @@ version: 2.1
 
 jobs:
   test:
-    docker:
-      - image: cimg/node:15.11.0
+      macos:
+        xcode: 11.3.0
+      steps:
+        - checkout
+        - run: fastlane scan
+  deploy:
+    macos:
+      xcode: 11.3.0
     steps:
       - checkout
-      - run: node --version
+      - deploy:
+          name: Deploy
+          command: fastlane release_appstore
+
+
 workflows:
-  test-deploy:
-    jobs:
-      - test
+  test_release:
+      jobs:
+        - test
+        - deploy:
+            filters:
+              branches:
+                only: release
